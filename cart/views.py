@@ -5,7 +5,7 @@ from cart.models import Cart, CartItem
 from store.models import Product
 
 
-def cart(request: HttpRequest, quantity=0, total=0):
+def cart(request: HttpRequest, quantity=0, total=0, cart_item=None):
     cart_items = CartItem.objects.filter(cart__cart_id=request.session.session_key)
     for cart_item in cart_items:
         total += cart_item.quantity * cart_item.product.price
