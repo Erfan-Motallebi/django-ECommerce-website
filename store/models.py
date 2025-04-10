@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+
 from category.models import Category
 
 
@@ -17,7 +18,29 @@ class Product(models.Model):
     modified_date = models.DateTimeField(auto_now=True)
 
     def get_url(self):
-        return reverse('product_detail', kwargs={'category_slug': self.category.slug, 'product_slug': self.slug})
+        return reverse(
+            "product_detail",
+            kwargs={"category_slug": self.category.slug, "product_slug": self.slug},
+        )
 
     def __str__(self):
         return self.product_name
+
+
+product_variations_choices = [
+    ("color", "color"),
+    ("size", "size"),
+]
+
+
+class Variations(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    variation_category = models.CharField(
+        max_length=100, choices=product_variations_choices
+    )
+    variation_name = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.product

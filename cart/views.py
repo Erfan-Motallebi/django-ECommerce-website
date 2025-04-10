@@ -12,13 +12,13 @@ def cart(request: HttpRequest, quantity=0, total=0, cart_item=None):
         quantity += cart_item.quantity
 
     tax_price = 2 * total / 100
-    grand_total = total
+    grand_total = total + tax_price
     context = {
-        'cart_items': cart_items,
-        'quantity': quantity,
-        'total': total,
-        'tax_price': tax_price,
-        'grand_total': grand_total,
+        "cart_items": cart_items,
+        "quantity": quantity,
+        "total": total,
+        "tax_price": tax_price,
+        "grand_total": grand_total,
     }
     return render(request=request, template_name="store/cart.html", context=context)
 
@@ -32,6 +32,10 @@ def _cart(request: HttpRequest) -> str:
 
 def add_cart(request: HttpRequest, product_id: int) -> HttpResponse:
     product = get_object_or_404(Product, pk=product_id, is_available=True)
+
+    # variations
+    color = request.GET.get("color")
+    size = request.GET.get("size")
 
     try:
         # Make a new cart id for each product being added to the user cart
@@ -54,7 +58,7 @@ def add_cart(request: HttpRequest, product_id: int) -> HttpResponse:
             quantity=1,
         )
         cart_item.save()
-    return redirect('cart')
+    return redirect("cart")
 
 
 def remove_cart(request: HttpRequest, product_id: int):
@@ -66,7 +70,7 @@ def remove_cart(request: HttpRequest, product_id: int):
         cart_item.save()
     else:
         cart_item.delete()
-    return redirect('cart')
+    return redirect("cart")
 
 
 def remove_cart_item(request: HttpRequest, product_id: int) -> HttpResponse:
@@ -74,4 +78,4 @@ def remove_cart_item(request: HttpRequest, product_id: int) -> HttpResponse:
     cart_id = get_object_or_404(Cart, cart_id=_cart(request))
     cart_item = get_object_or_404(CartItem, cart=cart_id, product=product)
     cart_item.delete()
-    return redirect('cart')
+    return redirect("cart")

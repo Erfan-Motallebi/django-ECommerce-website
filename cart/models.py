@@ -20,8 +20,8 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
 
-    # def __str__(self):
-    #     return self.product
+    def __unicode__(self):
+        return self.product
 
     def total_price(self) -> Decimal:
         return self.quantity * self.product.price
